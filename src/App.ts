@@ -5,6 +5,8 @@ import { personRouter } from './routes/PersonRouter';
 import { handleErrors } from './utils/ErrorMiddleware';
 import { handleBuildResponseWrapper, handleResponse, handleStartTimer } from './utils/ResponseMiddleware';
 
+import { PersonModel } from './domain/Person';
+import { generateFakeData } from './utils/FakeData'
 
 // import { modelOptions, prop, getModelForClass } from '@typegoose/typegoose';
 // import { FilterOperator, createQuery, createCountQuery } from './utils/BulkGet';
@@ -13,7 +15,7 @@ import { handleBuildResponseWrapper, handleResponse, handleStartTimer } from './
 
 
 const app = express();
-const port = 3000;
+
 
 // test typegoose basic connection
 // (async () => {
@@ -41,7 +43,12 @@ const port = 3000;
 // })();
 
 
-mongoose.connect('mongodb://localhost:27017/local', { useNewUrlParser: true });
+//mongoose.connect('mongodb://localhost:27017/local', { useNewUrlParser: true });
+mongoose.connect('mongodb://dbusr:D5JkSr4KkD@ds233228.mlab.com:33228/heroku_zlhlm2nm', { useNewUrlParser: true });
+
+// generate fake data
+//generateFakeData(PersonModel);
+
 
 // No need for clients to cache responses
 app.disable('etag');
@@ -55,4 +62,5 @@ app.use('/person', personRouter);
 app.use(handleErrors); 
 app.use(handleResponse);
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+const port = 3000;
+app.listen(port, () => console.log(`Example api listening on port ${port}!`));

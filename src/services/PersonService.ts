@@ -1,5 +1,4 @@
-//import { PersonModel } from '../domain/Person';
-import { defaultBulkGetHandler, createCountQuery } from '../utils/BulkGet';
+import { PersonModel } from '../domain/Person';
 
 export class PersonService {
 
@@ -8,6 +7,10 @@ export class PersonService {
   // public async updateBulkQuery(query): Promise<object> {
   //   return query;
   // }
+
+  public async findPerson(personId: string, responseFields?: string){
+    return PersonModel.findById(personId).select(responseFields);
+  }
 
 }
 

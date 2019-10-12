@@ -3,6 +3,8 @@ import { NextFunction, Request, Response } from 'express';
 import { ValidationError } from '../utils/errors/ValidationError';
 import { ResponseWrapper } from './Types';
 import { convertData } from '../utils/ResponseConverters';
+import * as _ from 'lodash';
+
 
 export enum FilterOperator {
   LIKE = '~=',
@@ -171,10 +173,19 @@ export const createQuery = function(schemaClass, modelClass, {filter = '', limit
   // get the org id from a simple request parameter passed as a required parameter to this function
   // query.where('orgId').eq('123');
 
-  query.limit(limit);
-
   if(responseFields){
     query.select(responseFields);
+  }
+
+  if(limit){
+    if(isNaN(limit)){
+      throw new ValidationError(`Limit was specified that wasn't a number ${limit}`);
+    }
+    if(_.isString(limit)){
+      limit = Number.parseInt(limit);
+    }
+    
+    query.limit(limit);
   }
 
   return query;
@@ -192,30 +203,13 @@ export const createCountQuery = function(schemaClass, modelClass, {filter = '', 
 };
 
 
-// The service might not need to override any special query logic etc so just invoke this helper by default
-export const defaultBulkGetHandler = async function(countQuery, query){
-  const ret: any = {data: await query.exec()};
-  ret.meta = {
-    pagination: {
-      count: await countQuery.countDocuments().exec()
-    },      
-  };
-
-  if(ret.data.length > 0){
-    ret.meta.pagination.lastId = ret.data[ret.data.length - 1]._id;
-  }
-
-  return ret;
-}
-
-
 // This is a default bulk get handler that you can use
 // Controllers that don't use this default handler will be responsible to set up the meta pagination and invoke the convertData themselves
 export const defaultBulkGet = async function(req: Request, resp: Response, next: NextFunction, schemaClass, modelClass, service): Promise<void> {
   try {
     const countQuery = createCountQuery(schemaClass, modelClass, req.query);
     const query = createQuery(schemaClass, modelClass, req.query);
-
+    
     if(service.updateBulkQuery){
       service.updateBulkQuery(countQuery);
       service.updateBulkQuery(query);

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1fe8ba2e-ed6b-4a89-97db-8f0fa7deb784",
+		"_postman_id": "ca1e4711-1800-4a26-92db-e12003a99a15",
 		"name": "test",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,10 +14,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}{{api-url}}/person?filter=firstName~=john&responseFields=firstName lastName",
+							"raw": "{{protocol}}localhost:3000/person?filter=firstName~=john&responseFields=firstName lastName&limit=5&lastId=5da1423e3e49b1a6b4ca7a45",
 							"host": [
-								"{{protocol}}{{api-url}}"
+								"{{protocol}}localhost"
 							],
+							"port": "3000",
 							"path": [
 								"person"
 							],
@@ -32,8 +33,36 @@
 								},
 								{
 									"key": "limit",
-									"value": "4",
-									"disabled": true
+									"value": "5"
+								},
+								{
+									"key": "lastId",
+									"value": "5da1423e3e49b1a6b4ca7a45"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "single-get",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}localhost:3000/person/5da1423e3e49b1a6b4ca7a39?responseFields=firstName lastName dog.name dog.smell",
+							"host": [
+								"{{protocol}}localhost"
+							],
+							"port": "3000",
+							"path": [
+								"person",
+								"5da1423e3e49b1a6b4ca7a39"
+							],
+							"query": [
+								{
+									"key": "responseFields",
+									"value": "firstName lastName dog.name dog.smell"
 								}
 							]
 						}
