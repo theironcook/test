@@ -14,11 +14,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}localhost:3000/person?filter=firstName~=john&responseFields=firstName lastName&limit=5&lastId=5da1423e3e49b1a6b4ca7a45",
+							"raw": "{{api-url}}/person?filter=firstName~=john&responseFields=firstName lastName&limit=5",
 							"host": [
-								"{{protocol}}localhost"
+								"{{api-url}}"
 							],
-							"port": "3000",
 							"path": [
 								"person"
 							],
@@ -37,7 +36,8 @@
 								},
 								{
 									"key": "lastId",
-									"value": "5da1423e3e49b1a6b4ca7a45"
+									"value": "5da1423e3e49b1a6b4ca7a45",
+									"disabled": true
 								}
 							]
 						}
@@ -50,11 +50,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}localhost:3000/person/5da1423e3e49b1a6b4ca7a39?responseFields=firstName lastName dog.name dog.smell",
+							"raw": "{{api-url}}/person/5da1423e3e49b1a6b4ca7a39?responseFields=firstName lastName dog.name dog.smell",
 							"host": [
-								"{{protocol}}localhost"
+								"{{api-url}}"
 							],
-							"port": "3000",
 							"path": [
 								"person",
 								"5da1423e3e49b1a6b4ca7a39"
@@ -63,6 +62,46 @@
 								{
 									"key": "responseFields",
 									"value": "firstName lastName dog.name dog.smell"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/person",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"person"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/person?responseFields=firstName lastName dob",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"person"
+							],
+							"query": [
+								{
+									"key": "responseFields",
+									"value": "firstName lastName dob"
 								}
 							]
 						}

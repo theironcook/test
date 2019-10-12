@@ -21,6 +21,30 @@ export class PersonController {
     }
   }
   
+  public async createPerson(req: Request, resp: Response, next: NextFunction): Promise<void> {
+    try {
+      // todo
+      //const response: ResponseWrapper = (resp as any).body;
+      //response.data = await personService.findPerson(req.params.personId, req.query.responseFields);
+      next();
+    }
+    catch(err){
+      next(err);
+    }
+  }
+
+  public async updatePerson(req: Request, resp: Response, next: NextFunction): Promise<void> {
+    try {
+      // todo
+      //const response: ResponseWrapper = (resp as any).body;
+      //response.data = await personService.findPerson(req.params.personId, req.query.responseFields);
+      next();
+    }
+    catch(err){
+      next(err);
+    }
+  }
+
 }
 
 export const personController = new PersonController();

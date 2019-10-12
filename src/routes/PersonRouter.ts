@@ -14,9 +14,9 @@ export class PatientRouter {
       
       this.router.get('/',  personController.getAllPersons);
       this.router.get('/:personId', personController.getPerson);
+      this.router.post('/', personController.createPerson);
+      this.router.put('/', personController.updatePerson);
 
-      // this.router.post('/', verifyScope('model:write'), handleWriteRequest(resource), patientController.validateLinkedModels,
-      //     patientController.createPatient, handleResponse);
       // this.router.put('/:patientId', verifyScope('model:write'), handleWriteRequest(resource), patientController.validateLinkedModels,
       //     patientController.updatePatient, handleResponse);
   }
