@@ -6,19 +6,16 @@ export class PatientRouter {
   public readonly router: Router;
 
   constructor() {
-      this.router = Router();
-      this.setRoutes();
+    this.router = Router();
+    this.setRoutes();
   }
 
   private setRoutes(): void {
       
-      this.router.get('/',  personController.getAllPersons);
-      this.router.get('/:personId', personController.getPerson);
-      this.router.post('/', personController.createPerson);
-      this.router.put('/', personController.updatePerson);
-
-      // this.router.put('/:patientId', verifyScope('model:write'), handleWriteRequest(resource), patientController.validateLinkedModels,
-      //     patientController.updatePatient, handleResponse);
+    this.router.get('/',  personController.getAllPersons);
+    this.router.get('/:personId', personController.getPerson);
+    this.router.post('/', personController.createPerson);
+    this.router.put('/:personId', personController.updatePerson);
   }
 }
 

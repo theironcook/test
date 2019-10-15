@@ -1,77 +1,97 @@
 import { NextFunction, Request, Response } from 'express';
 import { ResponseCode, ResponseWrapper } from './Types';
-import { ValidationError } from './errors/ValidationError';
-import { ResourceValidationError } from './errors/ResourceValidationError';
-
+import { ValidationError } from './errors';
+import * as _ from 'lodash';
 
 export function handleErrors(err: Error, req: Request, res: Response, next: NextFunction): void {  
   let response: ResponseWrapper = res['body'];
   if(!response){
-      response = new ResponseWrapper();
-      res['body'] = response;
+    response = new ResponseWrapper();
+    res['body'] = response;
   }
   const transactionId: string = req['transactionId'];
 
+  console.log(err);
+  //console.log(buildErrorMessage(err.name, err.message, transactionId, undefined), transactionId);
   //logger.debug(buildErrorMessage(err.name, err.message, transactionId, undefined), transactionId);
 
   switch (err.name) {
-      case 'UnauthorizedError':
-          response.errors = [formatError(new Error('Invalid authorization token'), ResponseCode.UNAUTHORIZED, req)];
-          response.statusCode = ResponseCode.UNAUTHORIZED;
-          break;
+    case 'UnauthorizedError':
+        response.errors = [formatError(new Error('Invalid authorization token'), ResponseCode.UNAUTHORIZED, req)];
+        response.statusCode = ResponseCode.UNAUTHORIZED;
+        break;
 
-      case 'SequelizeValidationError':
-          response.errors = err['errors'].map(e =>  buildErrorMessage('Validation Error', e.message, transactionId, e.path));
-          response.statusCode = ResponseCode.BAD_REQUEST;
-          break;
+    case 'SequelizeValidationError':
+        response.errors = err['errors'].map(e =>  buildErrorMessage('Validation Error', e.message, transactionId, e.path));
+        response.statusCode = ResponseCode.BAD_REQUEST;
+        break;    
 
-      case 'Validation Error':
-          const path: string | undefined = (err as ValidationError).getPath();
-          response.statusCode = ResponseCode.BAD_REQUEST;
-          response.errors = [buildErrorMessage(err.name, err.message, transactionId, path)];
-          break;
+    case 'Validation Error':
+        const path: string | undefined = (err as ValidationError).getPath();
+        response.statusCode = ResponseCode.BAD_REQUEST;
+        response.errors = [buildErrorMessage(err.name, err.message, transactionId, path)];
+        break;
 
-      case 'SequelizeUniqueConstraintError':
-          response.statusCode = ResponseCode.BAD_REQUEST;
-          response.errors = [buildErrorMessage(err.name, err.message, transactionId, undefined)];
-          break;
+    // Mongoose validation error doesn't have a space in the name
+    case 'ValidationError':
+        response.statusCode = ResponseCode.BAD_REQUEST;
+        let errors = (<any>err).errors;
+        if(!_.isArray(errors)){
+            errors = [errors];
+        }
+        // The mongoose ValidationError object is a bit awkward
+        for(let error of errors){
+            let validationError: any;
+            for(validationError of Object.values(error)){
+                if(!response.errors){
+                    response.errors = [];
+                }
+                response.errors.push(buildErrorMessage(validationError.name, validationError.message, transactionId, validationError.path));
+            }
+        }        
+        break;
 
-      case 'MissingObjectError':
-          response.statusCode = ResponseCode.NOT_FOUND;
-          response.errors = [buildErrorMessage(err.name, err.message, transactionId, err['path'])];
-          break;
+    // case 'SequelizeUniqueConstraintError':
+    //     response.statusCode = ResponseCode.BAD_REQUEST;
+    //     response.errors = [buildErrorMessage(err.name, err.message, transactionId, undefined)];
+    //     break;
 
-      case 'Forbidden':
-          response.statusCode = ResponseCode.FORBIDDEN;
-          response.errors = [buildErrorMessage(err.name, err.message, transactionId, err['path'])];
-          break;
+    case 'MissingObjectError':
+        response.statusCode = ResponseCode.NOT_FOUND;
+        response.errors = [buildErrorMessage(err.name, err.message, transactionId, err['path'])];
+        break;
 
-      case 'SyntaxError':
-          response.statusCode = ResponseCode.BAD_REQUEST;
-          response.errors = [buildErrorMessage(err.name, err.message, transactionId, undefined)];
-          break;
-          
-      case 'ResourceValidationError':
-          response.statusCode = ResponseCode.BAD_REQUEST;
-          response.errors = (err as ResourceValidationError).errors.map(
-              error => buildErrorMessage(error.name, error.message, transactionId, error.getPath())
-          );
-          break;
+    case 'Forbidden':
+        response.statusCode = ResponseCode.FORBIDDEN;
+        response.errors = [buildErrorMessage(err.name, err.message, transactionId, err['path'])];
+        break;
 
-      case 'PayloadTooLargeError':
-          response.statusCode = ResponseCode.BAD_REQUEST;
-          response.errors = [buildErrorMessage(err.name, err.message, transactionId, undefined)];
-          break;
+    // case 'SyntaxError':
+    //     response.statusCode = ResponseCode.BAD_REQUEST;
+    //     response.errors = [buildErrorMessage(err.name, err.message, transactionId, undefined)];
+    //     break;
+        
+    // case 'ResourceValidationError':
+    //     response.statusCode = ResponseCode.BAD_REQUEST;
+    //     response.errors = (err as ResourceValidationError).errors.map(
+    //         error => buildErrorMessage(error.name, error.message, transactionId, error.getPath())
+    //     );
+    //     break;
 
-      default:
-          if (err['code']) {
-              response.errors = [err];
-              response.statusCode = err['code'];
-          } else {
-              response.errors = [formatError(new Error('An unknown error has occurred.'), ResponseCode.UNEXPECTED_ERROR, req)];
-              response.statusCode = ResponseCode.UNEXPECTED_ERROR;
-              //logger.error(err, req['transactionId'], req.body);
-          }
+    case 'PayloadTooLargeError':
+        response.statusCode = ResponseCode.BAD_REQUEST;
+        response.errors = [buildErrorMessage(err.name, err.message, transactionId, undefined)];
+        break;
+
+    default:
+        if (err['code']) {
+            response.errors = [err];
+            response.statusCode = err['code'];
+        } else {
+            response.errors = [formatError(new Error('An unknown error has occurred.'), ResponseCode.UNEXPECTED_ERROR, req)];
+            response.statusCode = ResponseCode.UNEXPECTED_ERROR;
+            //logger.error(err, req['transactionId'], req.body);
+        }
   }
 
   next();

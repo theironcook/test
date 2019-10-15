@@ -5,14 +5,21 @@ import { FilterOperator } from '../utils/BulkGet';
 // Example of a schema / domain in Mongoose
 @modelOptions({schemaOptions: {collection: 'Person'}})
 export class PersonSchema {
-  @prop() 
-  firstName?: string;
 
-  @prop() 
-  lastName?: string;
+  @prop({required: true})
+  orgId: string;
+
+  @prop({required: true, minlength: 2}) 
+  firstName: string;
+
+  @prop({required: true}) 
+  lastName: string;
 
   @prop() 
   age?: number; 
+
+  @prop() 
+  height?: number;
 
   @prop() 
   phone?: string;
@@ -26,7 +33,7 @@ export class PersonSchema {
   @prop()
   guitars?: {name?: string, model?: string, year?: number, locations?: string[]};
 
-  // Define which filters are legal for which props
+  // Define which filters are legal for which props (including nested props (not sure about nested arrays))
   public static readonly validFilters = {
     'dog.name': [FilterOperator.IN, FilterOperator.EQUALS, FilterOperator.NOT_EQUALS, FilterOperator.LIKE
     ],
@@ -39,7 +46,8 @@ export class PersonSchema {
   // 2 way map between field values the API client sees and what is stored in the database.  Allows client to use 'id' and database to use '_id'
   public static readonly propAliases = {
     '_id': 'id',
-    'id': '_id'
+    'id': '_id',
+    '__v': 'version'
   };
 
   // Converters for values to/from the database.  Converter functions take the entire model

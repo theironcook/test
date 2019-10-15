@@ -1,4 +1,5 @@
 import { PersonModel } from '../domain/Person';
+import { response } from 'express';
 
 export class PersonService {
 
@@ -8,8 +9,19 @@ export class PersonService {
   //   return query;
   // }
 
-  public async findPerson(personId: string, responseFields?: string){
-    return PersonModel.findById(personId).select(responseFields);
+  public async findPerson(orgId: string, personId: string, responseFields?: string){
+    return PersonModel.findById(personId).find({orgId}).select(responseFields);
+  }
+
+
+  public async createPerson(orgId: string, data: any, correlationId: string, responseFields?: string): Promise<object> {
+    data.orgId = orgId;
+    const personModel = new PersonModel(data);
+    return await personModel.save();// todo .select(responseFields);    
+  }
+
+  public async updatePerson(orgId: string, id: string, data: any, correlationId: string, responseFields?: string): Promise<object> {        
+    return await PersonModel.findOneAndUpdate({_id: id}, data, {new: true}).find({orgId}).select(responseFields);    
   }
 
 }

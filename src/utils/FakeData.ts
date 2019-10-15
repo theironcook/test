@@ -43,7 +43,8 @@ const locations = ['California', 'Memphis', 'Houston', 'Lehi', 'Cedar Hills'];
 //Generate some random data
 export const generateFakeData = function(modelClass){
   for(let i = 0; i < 200; i++){
-    modelClass.create({ firstName: `John ${i}`, 
+    modelClass.create({   orgId: '123',
+                          firstName: `John ${i}`, 
                           lastName: `Doe ${i}`, 
                           age: randVal(ages), 
                           phone: randPhone(),

@@ -1,10 +1,11 @@
 
 import { NextFunction, Request, Response } from 'express';
-import { ValidationError } from '../utils/errors/ValidationError';
+import { ValidationError } from '../utils/errors';
 import { ResponseWrapper } from './Types';
 import { convertData } from '../utils/ResponseConverters';
 import * as _ from 'lodash';
-
+import { MissingObjectError } from '../utils/errors';
+import { CastError } from 'mongoose';
 
 export enum FilterOperator {
   LIKE = '~=',
@@ -205,10 +206,10 @@ export const createCountQuery = function(schemaClass, modelClass, {filter = '', 
 
 // This is a default bulk get handler that you can use
 // Controllers that don't use this default handler will be responsible to set up the meta pagination and invoke the convertData themselves
-export const defaultBulkGet = async function(req: Request, resp: Response, next: NextFunction, schemaClass, modelClass, service): Promise<void> {
+export const defaultBulkGet = async function(orgId: string, req: Request, resp: Response, next: NextFunction, schemaClass, modelClass, service): Promise<void> {
   try {
-    const countQuery = createCountQuery(schemaClass, modelClass, req.query);
-    const query = createQuery(schemaClass, modelClass, req.query);
+    const countQuery = createCountQuery(schemaClass, modelClass, req.query).find({orgId});
+    const query = createQuery(schemaClass, modelClass, req.query).find({orgId});
     
     if(service.updateBulkQuery){
       service.updateBulkQuery(countQuery);
@@ -227,7 +228,13 @@ export const defaultBulkGet = async function(req: Request, resp: Response, next:
   
     next();
   }
-  catch(error){
-    next(error);
+  catch(err){
+    // Mongo CastError occurs when the ids aren't well formed
+    if(err instanceof CastError){
+      next(new MissingObjectError(`Filter ids don't appear to be valid ${req.query.filter}.`));
+    }
+    else {
+      next(err);
+    }
   }
 }
