@@ -4,9 +4,10 @@ import { rabbitMQPublisher, PayloadOperation } from '../utils/RabbitMQPublisher'
 
 export class PersonService {
 
-  // If the service needs to add more to the query - like always exclude persons marked as deleted or private persons etc
-  // The default BulkGet.defaultBulkGet would invoke this function to modify the query and countQuery accordingly
+  // Some services might need to add additional restrictions to bulk queries
+  // This is how they would add more to the base query (Example: fetch only non-deleted users for all queries)
   // public async updateBulkQuery(query): Promise<object> {
+  //   // modify query here
   //   return query;
   // }
 
@@ -23,18 +24,27 @@ export class PersonService {
     rabbitMQPublisher.publish(orgId, correlationId, PayloadOperation.CREATE, convertData(PersonSchema, newPerson));
 
     if(responseFields){
-      // This is kind of wasteful to do another query but I can't chain a save with a select      
+      // It's is a bit wasteful to do another query but I can't chain a save with a select
       return this.findPerson(orgId, newPerson._id, responseFields);
     }
     else {
-      return newPerson; // fully populated
+      return newPerson; // fully populated model
     }    
   }
 
-  public async updatePerson(orgId: string, id: string, data: any, correlationId: string, responseFields?: string): Promise<object> {        
-    return await PersonModel.findOneAndUpdate({_id: id}, data, {new: true}).find({orgId}).select(responseFields);    
+
+  public async updatePerson(orgId: string, id: string, data: any, correlationId: string, responseFields?: string): Promise<object> {
+    const updatedPerson = await PersonModel.findOneAndUpdate({_id: id}, data, {new: true}).find({orgId}).select(responseFields);
+    
+    // The data has the deltas that the rabbit listeners need get.  If there was any calculated data it would need to be placed manually
+    // inside of the deltas here.
+    const deltas = Object.assign({_id: id}, data);
+    rabbitMQPublisher.publish(orgId, correlationId, PayloadOperation.UPDATE, convertData(PersonSchema, deltas));
+
+    return updatedPerson;
   }
 
+  
 }
 
 export const personService = new PersonService();

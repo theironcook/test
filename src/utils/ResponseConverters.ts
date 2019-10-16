@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 const convertAliases = function(schemaClass, data){
-  const convertedData = data.toObject();
+  const convertedData = data.toObject ? data.toObject() : data;
   if(schemaClass.propAliases){
     for(let dataKey of Object.keys(convertedData)){
       if(schemaClass.propAliases[dataKey]){
@@ -28,6 +28,7 @@ const convertValues = function(schemaClass, data){
 };
 
 
+// Convert a mongoose query or a pojo to what the client wants to see
 export const convertData = function(schemaClass, data){
   // convert prop name aliases at the root domain level
   let convertedData;

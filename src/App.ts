@@ -5,8 +5,6 @@ import * as mongoose from 'mongoose';
 import { personRouter } from './routes/PersonRouter';
 import { handleErrors } from './utils/ErrorMiddleware';
 import { handleBuildResponseWrapper, handleResponse, handleStartTimer } from './utils/ResponseMiddleware';
-import { generateFakeData } from './utils/FakeData';
-import { PersonModel } from './domain/Person'; 
 const app = express();
 
 
@@ -29,10 +27,9 @@ app.use((req: any, resp: any, next: any) => {
 })
 
 app.use(handleBuildResponseWrapper);
-
 app.use(handleStartTimer);
 
-// Set up all routes here
+// Set up all api routes here
 app.use('/person', personRouter);
 
 app.use(handleErrors); 

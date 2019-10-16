@@ -11,10 +11,12 @@ import * as _ from 'lodash';
 
 export class PersonController {
 
+
   public async getManyPersons(req: Request, resp: Response, next: NextFunction): Promise<void> {
     const orgId = (<any>req).orgId;
     defaultBulkGet(orgId, req, resp, next, PersonSchema, PersonModel, personService);
   }
+
 
   public async getPerson(req: Request, resp: Response, next: NextFunction): Promise<void> {
     try {      
@@ -40,7 +42,7 @@ export class PersonController {
     }
   }
   
-  // todo - rabbitmq message
+  
   public async createPerson(req: Request, resp: Response, next: NextFunction): Promise<void> {    
     const orgId = (<any>req).orgId;
     const response: ResponseWrapper = resp['body'];
@@ -54,8 +56,8 @@ export class PersonController {
       next(err);
     }
   }
-
-  // todo - rabbitmq message (need deltas for the update)
+  
+  
   public async updatePerson(req: Request, resp: Response, next: NextFunction): Promise<void> {
     const orgId = (<any>req).orgId;
     const response: ResponseWrapper = resp['body'];
@@ -75,6 +77,7 @@ export class PersonController {
     }
   }
 
+  
 }
 
 export const personController = new PersonController();

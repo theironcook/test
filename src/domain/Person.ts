@@ -52,12 +52,13 @@ export class PersonSchema {
 
   // Converters for values to/from the database.  Converter functions take the entire model
   public static readonly dataConverters = {
+    // This isn't hooked up yet until needed - if it does, then call this in the controller layer on data before passing to service
     toDB: {
     },
 
     fromDB: {
       version: (data) => {
-        return undefined; // remove version - api users won't see it
+        return undefined; // remove the version field - api users won't see it
       }
     }
   }
