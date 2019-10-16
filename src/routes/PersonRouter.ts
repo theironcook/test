@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { personController } from '../controllers/PersonController';
 
-export class PatientRouter {
+export class PersonRouter {
 
   public readonly router: Router;
 
@@ -15,7 +15,7 @@ export class PatientRouter {
   }
 }
 
-export const personRouterSingleton = new PatientRouter();
+export const personRouterSingleton = new PersonRouter();
 export const personRouter = personRouterSingleton.router;
 
 

@@ -164,15 +164,11 @@ export const createQuery = function(schemaClass, modelClass, {filter = '', limit
   }
   else {
     query = modelClass.find();
-  } 
+  }
 
   if(lastId){
     query.where('_id').gt(lastId);
   }
-
-  // todo - every query should inject an org id into the where statement
-  // get the org id from a simple request parameter passed as a required parameter to this function
-  // query.where('orgId').eq('123');
 
   if(responseFields){
     query.select(responseFields);
