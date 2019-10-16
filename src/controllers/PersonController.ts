@@ -27,9 +27,10 @@ export class PersonController {
       if(_.isArray(person) && person.length === 0){
         next(new MissingObjectError(`Person ${req.params.personId} not found.`));        
       }
-      
-      response.data = convertData(PersonSchema, person);
-      next();       
+      else {        
+        response.data = convertData(PersonSchema, person);
+        next(); 
+      }      
     }
     catch(err){
       // If req.params.personId wasn't a mongo id then we will get a CastError - basically same as if the id wasn't found
@@ -67,17 +68,18 @@ export class PersonController {
       if(_.isArray(updatedPerson) && updatedPerson.length === 0){
         next(new MissingObjectError(`Person ${req.params.personId} not found.`));        
       }
-      
-      response.data = convertData(PersonSchema, updatedPerson);      
-      response.statusCode = ResponseCode.OK;
-      next();
+      else {      
+        response.data = convertData(PersonSchema, updatedPerson);      
+        response.statusCode = ResponseCode.OK;
+        next();
+      }
     } 
     catch (err) {      
       next(err);
     }
   }
 
-  
+
 }
 
 export const personController = new PersonController();
