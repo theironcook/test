@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ca1e4711-1800-4a26-92db-e12003a99a15",
+		"_postman_id": "3914555c-eb5d-4da8-97e7-a40a52691344",
 		"name": "test",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,7 +14,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api-url}}/person?filter=firstName~=john&responseFields=firstName lastName&limit=5",
+							"raw": "{{api-url}}/person?filter=firstName~=Joe&responseFields=firstName lastName orgId&limit=5",
 							"host": [
 								"{{api-url}}"
 							],
@@ -24,11 +24,11 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "firstName~=john"
+									"value": "firstName~=Joe"
 								},
 								{
 									"key": "responseFields",
-									"value": "firstName lastName"
+									"value": "firstName lastName orgId"
 								},
 								{
 									"key": "limit",
@@ -50,18 +50,18 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api-url}}/person/5da1423e3e49b1a6b4ca7a39?responseFields=firstName lastName dog.name dog.smell",
+							"raw": "{{api-url}}/person/5da648745f603549a3e10b99?responseFields=firstName lastName dog.name dog.smell orgId",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"person",
-								"5da1423e3e49b1a6b4ca7a39"
+								"5da648745f603549a3e10b99"
 							],
 							"query": [
 								{
 									"key": "responseFields",
-									"value": "firstName lastName dog.name dog.smell"
+									"value": "firstName lastName dog.name dog.smell orgId"
 								}
 							]
 						}
@@ -72,14 +72,33 @@
 					"name": "put",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n\t\"firstName\": \"Joe\",\n    \"lastName\": \"Blow\",\n    \"age\": 47,\n    \"height\": 34,\n    \"phone\": \"123 456 7777\",\n    \"dob\": \"1970-01-01T06:00:00.000Z\",\n    \"dog\": {\n        \"name\": \"Rover\"\n    },\n    \"guitars\": [\n        {\n            \"name\": \"second\",\n            \"model\": \"fender janguar\",\n            \"locations\": [\n                \"Houston\",\n                \"Cedar Hills\"\n            ],\n            \"year\": 2006\n        },\n        {\n            \"name\": \"third\",\n            \"model\": \"ovation applause\",\n            \"locations\": [\n                \"Lehi\",\n                \"Cedar Hills\"\n            ],\n            \"year\": 2008\n        }\n    ]\n}"
+						},
 						"url": {
-							"raw": "{{api-url}}/person",
+							"raw": "{{api-url}}/person/5da648745f603549a3e10b99",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
-								"person"
+								"person",
+								"5da648745f603549a3e10b99"
+							],
+							"query": [
+								{
+									"key": "responseFields",
+									"value": "firstName lastName age",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -89,9 +108,20 @@
 					"name": "post",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n\t\"firstName\": \"Joe\",\n    \"lastName\": \"Blow\",\n    \"age\": 33,\n    \"phone\": \"123 456 7777\",\n    \"dob\": \"1970-01-01T06:00:00.000Z\",\n    \"dog\": {\n        \"name\": \"Rover\"\n    },\n    \"guitars\": [\n        {\n            \"name\": \"second\",\n            \"model\": \"fender janguar\",\n            \"locations\": [\n                \"Houston\",\n                \"Cedar Hills\"\n            ],\n            \"year\": 2006\n        },\n        {\n            \"name\": \"third\",\n            \"model\": \"ovation applause\",\n            \"locations\": [\n                \"Lehi\",\n                \"Cedar Hills\"\n            ],\n            \"year\": 2008\n        }\n    ]\n}"
+						},
 						"url": {
-							"raw": "{{api-url}}/person?responseFields=firstName lastName dob",
+							"raw": "{{api-url}}/person?responseFields=firstName lastName dob dog",
 							"host": [
 								"{{api-url}}"
 							],
@@ -101,7 +131,7 @@
 							"query": [
 								{
 									"key": "responseFields",
-									"value": "firstName lastName dob"
+									"value": "firstName lastName dob dog"
 								}
 							]
 						}
