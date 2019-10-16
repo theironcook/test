@@ -11,7 +11,7 @@ import * as _ from 'lodash';
 
 export class PersonController {
 
-  public async getAllPersons(req: Request, resp: Response, next: NextFunction): Promise<void> {
+  public async getManyPersons(req: Request, resp: Response, next: NextFunction): Promise<void> {
     const orgId = (<any>req).orgId;
     defaultBulkGet(orgId, req, resp, next, PersonSchema, PersonModel, personService);
   }
@@ -40,12 +40,12 @@ export class PersonController {
     }
   }
   
-  // todo - rabbitmq message (need deltas)
+  // todo - rabbitmq message
   public async createPerson(req: Request, resp: Response, next: NextFunction): Promise<void> {    
     const orgId = (<any>req).orgId;
     const response: ResponseWrapper = resp['body'];
     try {
-      const newPerson = await personService.createPerson(orgId, req.body, req['correlationId']);
+      const newPerson = await personService.createPerson(orgId, req.body, req['correlationId'], req.query.responseFields);
       response.data = convertData(PersonSchema, newPerson);    
       response.statusCode = ResponseCode.CREATED;
       next();
@@ -55,7 +55,7 @@ export class PersonController {
     }
   }
 
-  // todo - rabbitmq message (need deltas)
+  // todo - rabbitmq message (need deltas for the update)
   public async updatePerson(req: Request, resp: Response, next: NextFunction): Promise<void> {
     const orgId = (<any>req).orgId;
     const response: ResponseWrapper = resp['body'];

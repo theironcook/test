@@ -1,5 +1,6 @@
-import { PersonModel } from '../domain/Person';
-import { response } from 'express';
+import { convertData } from '../utils/ResponseConverters';
+import { PersonSchema, PersonModel } from '../domain/Person';
+import { rabbitMQPublisher, PayloadOperation } from '../utils/RabbitMQPublisher';
 
 export class PersonService {
 
@@ -17,7 +18,17 @@ export class PersonService {
   public async createPerson(orgId: string, data: any, correlationId: string, responseFields?: string): Promise<object> {
     data.orgId = orgId;
     const personModel = new PersonModel(data);
-    return await personModel.save();// todo .select(responseFields);    
+    const newPerson = await personModel.save();
+    
+    rabbitMQPublisher.publish(orgId, correlationId, PayloadOperation.CREATE, convertData(PersonSchema, newPerson));
+
+    if(responseFields){
+      // This is kind of wasteful to do another query but I can't chain a save with a select      
+      return this.findPerson(orgId, newPerson._id, responseFields);
+    }
+    else {
+      return newPerson; // fully populated
+    }    
   }
 
   public async updatePerson(orgId: string, id: string, data: any, correlationId: string, responseFields?: string): Promise<object> {        

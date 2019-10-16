@@ -7,12 +7,8 @@ export class PatientRouter {
 
   constructor() {
     this.router = Router();
-    this.setRoutes();
-  }
 
-  private setRoutes(): void {
-      
-    this.router.get('/',  personController.getAllPersons);
+    this.router.get('/',  personController.getManyPersons);
     this.router.get('/:personId', personController.getPerson);
     this.router.post('/', personController.createPerson);
     this.router.put('/:personId', personController.updatePerson);

@@ -56,9 +56,9 @@ export class PersonSchema {
     },
 
     fromDB: {
-      // age: (data) => {
-      //   return data.age+10;
-      // }
+      version: (data) => {
+        return undefined; // remove version - api users won't see it
+      }
     }
   }
 };
