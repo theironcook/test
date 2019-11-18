@@ -46,8 +46,7 @@ export class PersonSchema {
   // 2 way map between field values the API client sees and what is stored in the database.  Allows client to use 'id' and database to use '_id'
   public static readonly propAliases = {
     '_id': 'id',
-    'id': '_id',
-    '__v': 'version'
+    'id': '_id'
   };
 
   // Converters for values to/from the database.  Converter functions take the entire model
@@ -57,7 +56,7 @@ export class PersonSchema {
     },
 
     fromDB: {
-      version: (data) => {
+      __v: (data) => {
         return undefined; // remove the version field - api users won't see it
       }
     }

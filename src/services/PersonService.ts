@@ -18,7 +18,7 @@ export class PersonService {
 
   public async createPerson(orgId: string, data: any, correlationId: string, responseFields?: string): Promise<object> {
     data.orgId = orgId;
-    const personModel = new PersonModel(data);
+    const personModel = new PersonModel(data); 
     const newPerson = await personModel.save();
     
     rabbitMQPublisher.publish(orgId, correlationId, PayloadOperation.CREATE, convertData(PersonSchema, newPerson));
